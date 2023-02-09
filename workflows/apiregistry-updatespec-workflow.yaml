@@ -32,7 +32,7 @@ main:
                                           - name: 'gcr.io/cloud-builders/gcloud'
                                             script: '${"curl -H \"Authorization: Bearer "+ "\"$(gcloud auth print-access-token)\"\"" +"  https://apigeeregistry.googleapis.com/v1/" + input.data.payload.name + ":getContents --output "+input.data.payload.filename}'
                                           - name: ${"europe-docker.pkg.dev/"+project_id+"/builder/apigee-automation-builder"}
-                                            script: '${"openapi2apigee generateApi "+input.api+" -s "+ input.data.payload.filename +" -d . -O true -B /"+input.api+"/"+input.specversion}'#TODO add targetEndpoint??
+                                            script: '${"openapi2apigee generateApi "+input.api+" -s "+ input.data.payload.filename +" -d . -O true -B /"+input.api+"/"+input.version}'#TODO add targetEndpoint??
                                           - name: 'gcr.io/cloud-builders/gcloud'
                                             script: '${"curl -X POST -H \"Authorization: Bearer "+ "\"$(gcloud auth print-access-token)\"\"" +" -F file=@" +input.api+"/"+ "apiproxy.zip \"https://apigee.googleapis.com/v1/organizations/" + project_id + "/apis?action=import&name="+input.api +"\""  }'
                   - condition: ${input.data.payload.mimeType == "application/wsdl+xml"}
@@ -54,7 +54,7 @@ main:
                                                           - name: 'gcr.io/cloud-builders/gcloud'
                                                             script: '${"curl -H \"Authorization: Bearer "+ "\"$(gcloud auth print-access-token)\"\"" +"  https://apigeeregistry.googleapis.com/v1/" + input.data.payload.name + ":getContents --output "+input.data.payload.filename}'
                                                           - name: ${"europe-docker.pkg.dev/"+project_id+"/builder/apigee-automation-builder"}
-                                                            script: '${"java -jar wsdl2apigee-1.0.0-jar-with-dependencies.jar -wsdl="+ input.data.payload.filename + " -passthru=true -oauth=true -basepath=/"+input.api+"/"+input.specversion}'#TODO  add targetEndpoint??
+                                                            script: '${"java -jar wsdl2apigee-1.0.0-jar-with-dependencies.jar -wsdl="+ input.data.payload.filename + " -passthru=true -oauth=true -basepath=/"+input.api+"/"+input.version}'#TODO  add targetEndpoint??
                                                           - name: 'bash'
                                                             script: 'mv *.zip package.zip'
                                                           - name: 'gcr.io/cloud-builders/gcloud'
@@ -73,7 +73,7 @@ main:
                                                           - name: 'bash'
                                                             script: '${"unzip "+input.data.payload.filename +" -d ./"+ text.split(input.data.payload.filename, ".")[0]}'
                                                           - name: ${"europe-docker.pkg.dev/"+project_id+"/builder/apigee-automation-builder"}
-                                                            script: '${"java -jar ../wsdl2apigee-1.0.0-jar-with-dependencies.jar -wsdl=./"+ text.split(input.data.payload.filename, ".")[0]+"/service.wsdl" + " -passthru=true -oauth=true -basepath=/"+input.api+"/"+input.specversion}' #TODO  add targetEndpoint??
+                                                            script: '${"java -jar ../wsdl2apigee-1.0.0-jar-with-dependencies.jar -wsdl=./"+ text.split(input.data.payload.filename, ".")[0]+"/service.wsdl" + " -passthru=true -oauth=true -basepath=/"+input.api+"/"+input.version}' #TODO  add targetEndpoint??
                                                           - name: 'bash'
                                                             script: '${"rm " + input.data.payload.filename}'
                                                           - name: 'bash'
